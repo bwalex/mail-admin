@@ -1,0 +1,112 @@
+.row
+  .small-8.small-centered.columns
+    %nav.breadcrumbs
+      %a{ :href => "/admin/domains" } Domains
+      %a{ :href => "/admin/domains/#{@domain.fqdn}" }= @domain.fqdn
+      %a{ :href => "/admin/domains/#{@domain.fqdn}/mailboxes" } Mailboxes
+
+.row
+  .small-8.small-centered.columns
+    - if flash.has?(:error)
+      .alert-box.alert
+        = flash[:error]
+    - if flash.has?(:success)
+      .alert-box.success
+        = flash[:success]
+
+.row
+  .small-2.columns
+    %ul.side-nav
+      %li
+        %a{ :href => "/admin/domains/#{@domain.fqdn}"} Overview
+      %li.active
+        %a{ :href => "/admin/domains/#{@domain.fqdn}/mailboxes"} Mailboxes
+      %li
+        %a{ :href => "/admin/domains/#{@domain.fqdn}/aliases"} Aliases
+      %li
+        %a{ :href => "/admin/domains/#{@domain.fqdn}/settings"} Settings
+  .small-8.small-centered.columns
+    %h2 Mailboxes
+    %table#article-list
+      %thead
+        %tr
+          %th Local part
+          %th{ :width => "120"} Active?
+      %tbody
+        - for mailbox in @mailboxes
+          %tr
+            %td
+              %a{ :href => "/admin/domains/#{@domain.fqdn}/mailboxes/#{mailbox.local_part}" }
+                = mailbox.local_part
+            %td.text-right= a.active ? "Yes" : "No"
+
+    %a.button{ :href => "#", :'data-reveal-id' => "new-modal" }
+      New mailbox...
+    .reveal-modal#new-modal.small{ :'data-reveal' => true, :role => "dialog", :'aria-hidden' => "true" }
+      %h2 New Mailbox
+      %form{ :method => "POST", :action => "/admin/domains/#{@domain.fqdn}/mailboxes" }
+        .row
+          .small-12.columns
+            .row.collapse
+              .small-6.columns
+                %input{ :type => 'text', :placeholder => "email", :name => "local_part" }
+              .small-6.columns
+                %span.postfix= "@#{@domain.fqdn}"
+
+        .row
+          .small-12.columns
+            %label
+              Transport
+              %select{ :type => "transport" }
+        .row
+          .small-12.columns
+            %label
+              Mailbox format
+              %select{ :type => "mailbox_format" }
+        .row
+          .small-12.columns
+            %label
+              Password
+              %input{ :type => 'password', :placeholder => "Password", :name => "password" }
+        .row
+          .small-12.columns
+            %label
+              Repeat password
+              %input{ :type => 'password', :placeholder => "Password", :name => "repeat_password" }
+        .row
+          .small-12.columns
+            %label
+              Mailbox status
+              %select
+        .row
+          .small-12.columns
+            %label
+              Login permissions
+              %select{ :multiple => true, :name => "login_permissions" }
+                %option SMTP
+                %option IMAP
+        .row
+          .small-12.columns
+            %label
+              Quota
+            .row.collapse
+              .small-8.columns
+                %input{ :type => 'text', :name => "quota", :placeholder => "0" }
+              .small-4.columns
+                %select.postfix{ :name => "quota_suffix" }
+                  %option kB
+                  %option MB
+                  %option GB
+        - if @user.is_admin?
+          .row
+            .small-12.columns
+              %label
+                UID (leave empty for auto)
+                %input{ :type => 'text', :name => "uid", :placeholder => 'auto' }
+        .row
+          .small-12.columns
+            %input.button{ :type => "submit", :value => "Create new mailbox" }
+
+
+:javascript
+  $("#article-list").dataTable();

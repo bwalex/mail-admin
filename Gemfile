@@ -1,11 +1,12 @@
 source "https://rubygems.org"
 
 gem "rake",         "~> 11.1.2"
-gem "puma",         "~> 2.6.0"
+gem "puma",         "~> 2.8.2"
 
+gem "thin"
 gem "json",         "~> 1.8.3"
 gem "haml",         "~> 4.0.7"
-gem "sass",         "~> 3.4.22"
+gem "sass",         "~> 3.2.12"
 
 gem "activerecord", "~> 4.2.6", :require => "active_record"
 
@@ -24,6 +25,7 @@ gem "rack-flash3",  "~> 1.0.5", :require => "rack-flash"
 gem "rack-cors",    "~> 0.4.0", :require => "rack/cors"
 
 gem "sucker_punch", "~> 2.0.2"
+gem "pony",         "~> 1.11"
 
 group :test do
   gem "rspec",            "~> 3.4.0"

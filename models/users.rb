@@ -57,6 +57,12 @@ class User < ActiveRecord::Base
     return self[:admin]
   end
 
+  def can?(type, domain)
+    return true if self.is_admin?
+
+    domain.user.id == self.id
+  end
+
   private
 
   def hash_new_password

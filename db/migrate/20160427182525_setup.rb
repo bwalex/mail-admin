@@ -6,12 +6,13 @@ class Setup < ActiveRecord::Migration
       t.integer    :gid
       # t.string     :maildir
       t.string     :def_mailbox_format
+      t.boolean    :active
 
       t.timestamps
     end
 
     add_index :domains, :fqdn, :unique => true
-    add_index :gid, :unique => true
+    add_index :domains, :gid, :unique => true
 
 
     create_table :transports do |t|

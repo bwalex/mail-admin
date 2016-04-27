@@ -1,0 +1,46 @@
+.row
+  .small-8.small-centered.columns
+    %nav.breadcrumbs
+      %a{ :href => "/admin/domains" } Domains
+
+.row
+  .small-8.small-centered.columns
+    - if flash.has?(:error)
+      .alert-box.alert
+        = flash[:error]
+    - if flash.has?(:success)
+      .alert-box.success
+        = flash[:success]
+
+.row
+  .small-8.small-centered.columns
+    %h2 Domains
+    %table#domain-list
+      %thead
+        %tr
+          %th Domain
+          %th.text-right{ :width => "140"} Aliases
+          %th.text-right{ :width => "140"} Mailboxes
+      %tbody
+        - for domain in @domains
+          %tr
+            %td
+              %a{ :href => "/admin/domains/#{domain.fqdn}/" }
+                = domain.fqdn
+            %td.text-right
+              %a{ :href => "/admin/domains/#{domain.fqdn}/aliases" }
+                = domain.aliases.count
+            %td.text-right
+              %a{ :href => "/admin/domains/#{domain.fqdn}/mailboxes" }
+                = domain.mailboxes.count
+.row
+  .small-8.small-centered.columns
+    %form{ :method => "post", :action => "/admin/domains" }
+      .row.collapse
+        .small-9.columns
+          %input{ :type => "text", :name => "fqdn", :placeholder => "example.com"}
+        .small-3.columns
+          %input.button.postfix{ :type => "submit", :value => "Add new domain" }
+
+:javascript
+  $("#domain-list").dataTable();

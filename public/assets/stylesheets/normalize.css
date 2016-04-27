@@ -120,3 +120,5 @@ textarea { overflow: auto; /* 1 */ vertical-align: top; /* 2 */ }
 /* ========================================================================== Tables ========================================================================== */
 /** Remove most spacing between table cells. */
 table { border-collapse: collapse; border-spacing: 0; }
+
+/*# sourceMappingURL=normalize.css.map */

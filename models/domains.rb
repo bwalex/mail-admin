@@ -1,4 +1,5 @@
 require_relative 'users'
+require_relative 'aliases'
 
 class Domain < ActiveRecord::Base
   MAILBOX_FORMATS = %w(Maildir sdbox mdbox)

@@ -4,7 +4,6 @@ require 'securerandom'
 require 'sass/plugin/rack'
 
 require './web'
-require './api'
 
 use ActiveRecord::ConnectionAdapters::ConnectionManagement
 use Sass::Plugin::Rack
@@ -22,4 +21,4 @@ use Rack::Session::Cookie,
 #   end
 # end
 
-run Rack::Cascade.new [API, Web]
+run Rack::Cascade.new [Web]

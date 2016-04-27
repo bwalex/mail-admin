@@ -1,0 +1,72 @@
+.row
+  .small-8.small-centered.columns
+    %nav.breadcrumbs
+      %a{ :href => "/admin/domains" } Domains
+      %a{ :href => "/admin/domains/#{@domain.fqdn}" }= @domain.fqdn
+      %a{ :href => "/admin/domains/#{@domain.fqdn}/aliases" } Aliases
+
+.row
+  .small-8.small-centered.columns
+    - if flash.has?(:error)
+      .alert-box.alert
+        = flash[:error]
+    - if flash.has?(:success)
+      .alert-box.success
+        = flash[:success]
+
+.row
+  .small-2.columns
+    %ul.side-nav
+      %li
+        %a{ :href => "/admin/domains/#{@domain.fqdn}"} Overview
+      %li
+        %a{ :href => "/admin/domains/#{@domain.fqdn}/mailboxes"} Mailboxes
+      %li.active
+        %a{ :href => "/admin/domains/#{@domain.fqdn}/aliases"} Aliases
+      %li
+        %a{ :href => "/admin/domains/#{@domain.fqdn}/settings"} Settings
+  .small-8.small-centered.columns
+    %h2 Aliases
+    %table#article-list
+      %thead
+        %tr
+          %th Local part
+          %th{ :width => "120"} Active?
+      %tbody
+        - for a in @aliases
+          %tr
+            %td
+              %a{ :href => "/admin/domains/#{@domain.fqdn}/aliases/#{a.local_part}" }
+                = a.local_part
+            %td.text-right= a.active ? "Yes" : "No"
+
+    %a.button{ :href => "#", :'data-reveal-id' => "new-modal" }
+      New alias...
+    .reveal-modal#new-modal.small{ :'data-reveal' => true, :role => "dialog", :'aria-hidden' => "true" }
+      %h2 New Alias
+      %form{ :method => "POST", :action => "/admin/domains/#{@domain.fqdn}/aliases" }
+        .row
+          .small-12.columns
+            .row.collapse
+              .small-6.columns
+                %input{ :type => 'text', :placeholder => "email", :name => "local_part" }
+              .small-6.columns
+                %span.postfix= "@#{@domain.fqdn}"
+
+        .row
+          .small-12.columns
+            %label
+              Destination
+              %input{ :type => 'text', :placeholder => "destination", :name => "destination" }
+        .row
+          .small-12.columns
+            %label
+              Mailbox status
+              %select
+        .row
+          .small-12.columns
+            %input.button{ :type => "submit", :value => "Create new alias" }
+
+
+:javascript
+  $("#article-list").dataTable();
