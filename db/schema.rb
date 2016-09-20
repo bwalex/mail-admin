@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20160709200605) do
+ActiveRecord::Schema.define(version: 20160428185058) do
 
   create_table "aliases", force: :cascade do |t|
     t.integer  "domain_id",   limit: 4
@@ -29,6 +29,7 @@ ActiveRecord::Schema.define(version: 20160709200605) do
     t.string   "fqdn",               limit: 255
     t.integer  "gid",                limit: 4
     t.string   "def_mailbox_format", limit: 255
+    t.boolean  "active"
     t.datetime "created_at"
     t.datetime "updated_at"
   end
