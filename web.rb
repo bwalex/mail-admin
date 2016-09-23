@@ -3,6 +3,7 @@ require_relative 'models/global_param'
 require_relative 'models/domains'
 require_relative 'models/aliases'
 require_relative 'models/mailboxes'
+require_relative 'models/transports'
 #require_relative 'workers/email_worker'
 
 class Web < Sinatra::Base
@@ -106,6 +107,7 @@ class Web < Sinatra::Base
       redirect "/admin"
     end
     @users = User.all
+    @transports = Transport.all
 
     haml :admin_global, :layout => :admin_layout, :format => :html5,
       :locals => {
@@ -114,7 +116,46 @@ class Web < Sinatra::Base
   end
 
 
-  post '/admin/global' do
+  post '/admin/global/transports_delete' do
+    unless @user.is_admin?
+      flash[:error] = "You are not an admin"
+      redirect "/admin"
+    end
+    begin
+      transport_ids = (params[:transport_delete] || []).map { |i| i.to_i }
+      Transport.where(:id => transport_ids).destroy_all
+
+      flash[:success] = "Changes saved successfully"
+    rescue ActiveRecord::RecordNotFound
+      flash[:error] = "Something nasty happened - if it wasn't your fault, try again."
+    rescue ActiveRecord::RecordInvalid => invalid
+      flash[:error] = "Error deleting transport: #{invalid.message}"
+    end
+    redirect "/admin/global"
+  end
+
+  post '/admin/global/transport_modify' do
+    unless @user.is_admin?
+      flash[:error] = "You are not an admin"
+      redirect "/admin"
+    end
+    begin
+      transport = Transport.find(params[:transport_id].to_i)
+      transport.name = params[:transport_name]
+      transport.transport = params[:transport_transport]
+      transport.save!
+
+      flash[:success] = "Changes saved successfully"
+    rescue ActiveRecord::RecordNotFound
+      flash[:error] = "Something nasty happened - if it wasn't your fault, try again."
+    rescue ActiveRecord::RecordInvalid => invalid
+      flash[:error] = "Error modifying transport: #{invalid.message}"
+    end
+    redirect "/admin/global"
+  end
+
+
+  post '/admin/global/users_modify' do
     unless @user.is_admin?
       flash[:error] = "You are not an admin"
       redirect "/admin"
@@ -158,13 +199,31 @@ class Web < Sinatra::Base
       redirect "/admin"
     end
     begin
-      user = User.create!(:email => params[:email],
+      _user = User.create!(:username => params[:username],
+                          :email => params[:email],
+                          :new_password => "r00t!",
                           :admin => false)
 
-      NewUserEmailJob.new.async.perform(user.id)
+      # NewUserEmailJob.new.async.perform(user.id)
       flash[:success] = "New user added successfully"
     rescue ActiveRecord::RecordInvalid => invalid
       flash[:error] = "Error adding new user: #{invalid.message}"
+    end
+    redirect "/admin/global"
+  end
+
+  post '/admin/global/transports_add' do
+    unless @user.is_admin?
+      flash[:error] = "You are not an admin"
+      redirect "/admin"
+    end
+    begin
+      _user = Transport.create!(:name => params[:name],
+                                :transport => params[:transport])
+
+      flash[:success] = "New transport added successfully"
+    rescue ActiveRecord::RecordInvalid => invalid
+      flash[:error] = "Error adding new transport: #{invalid.message}"
     end
     redirect "/admin/global"
   end
