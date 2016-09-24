@@ -23,8 +23,6 @@
         %a{ :href => "/admin/domains/#{@domain.fqdn}/mailboxes"} Mailboxes
       %li.active
         %a{ :href => "/admin/domains/#{@domain.fqdn}/aliases"} Aliases
-      %li
-        %a{ :href => "/admin/domains/#{@domain.fqdn}/settings"} Settings
   .small-8.small-centered.columns
     %h2 Aliases
     %table#article-list
@@ -61,8 +59,10 @@
         .row
           .small-12.columns
             %label
-              Mailbox status
-              %select
+              Status
+              %select{ :name => "mailbox_status" }
+                %option{ :value => "active" } Active
+                %option{ :value => "inactive" } Inactive
         .row
           .small-12.columns
             %input.button{ :type => "submit", :value => "Create new alias" }

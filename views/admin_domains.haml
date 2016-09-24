@@ -19,14 +19,16 @@
       %thead
         %tr
           %th Domain
+          %th{ :width => "120"} Active?
           %th.text-right{ :width => "140"} Aliases
           %th.text-right{ :width => "140"} Mailboxes
       %tbody
         - for domain in @domains
           %tr
             %td
-              %a{ :href => "/admin/domains/#{domain.fqdn}/" }
+              %a{ :href => "/admin/domains/#{domain.fqdn}" }
                 = domain.fqdn
+            %td.text-right= domain.active ? "Yes" : "No"
             %td.text-right
               %a{ :href => "/admin/domains/#{domain.fqdn}/aliases" }
                 = domain.aliases.count

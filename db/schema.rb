@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20160428185058) do
+ActiveRecord::Schema.define(version: 20160924073325) do
 
   create_table "aliases", force: :cascade do |t|
     t.integer  "domain_id",   limit: 4
@@ -25,10 +25,9 @@ ActiveRecord::Schema.define(version: 20160428185058) do
   add_index "aliases", ["local_part", "domain_id"], name: "index_aliases_on_local_part_and_domain_id", unique: true, using: :btree
 
   create_table "domains", force: :cascade do |t|
-    t.integer  "user_id",            limit: 4
-    t.string   "fqdn",               limit: 255
-    t.integer  "gid",                limit: 4
-    t.string   "def_mailbox_format", limit: 255
+    t.integer  "user_id",    limit: 4
+    t.string   "fqdn",       limit: 255
+    t.integer  "gid",        limit: 4
     t.boolean  "active"
     t.datetime "created_at"
     t.datetime "updated_at"
@@ -36,10 +35,11 @@ ActiveRecord::Schema.define(version: 20160428185058) do
 
   add_index "domains", ["fqdn"], name: "index_domains_on_fqdn", unique: true, using: :btree
   add_index "domains", ["gid"], name: "index_domains_on_gid", unique: true, using: :btree
+  add_index "domains", ["user_id"], name: "fk_rails_ed2a49436c", using: :btree
 
   create_table "global_params", force: :cascade do |t|
-    t.string  "key",   limit: 255
-    t.integer "value", limit: 4
+    t.string "key",   limit: 255
+    t.string "value", limit: 255
   end
 
   create_table "mailboxes", force: :cascade do |t|
@@ -82,6 +82,7 @@ ActiveRecord::Schema.define(version: 20160428185058) do
   add_index "users", ["username"], name: "index_users_on_username", unique: true, using: :btree
 
   add_foreign_key "aliases", "domains", on_delete: :cascade
+  add_foreign_key "domains", "users"
   add_foreign_key "mailboxes", "domains", on_delete: :cascade
   add_foreign_key "mailboxes", "transports"
 end

@@ -1,0 +1,115 @@
+.row
+  .small-8.small-centered.columns
+    %nav.breadcrumbs
+      %a{ :href => "/admin/domains" } Domains
+      %a{ :href => "/admin/domains/#{@domain.fqdn}" }= @domain.fqdn
+      %a{ :href => "/admin/domains/#{@domain.fqdn}/mailboxes" } Mailboxes
+      %a{ :href => "/admin/domains/#{@domain.fqdn}/mailboxes/#{@mailbox.local_part}" }= @mailbox.local_part
+
+.row
+  .small-8.small-centered.columns
+    - if flash.has?(:error)
+      .alert-box.alert
+        = flash[:error]
+    - if flash.has?(:success)
+      .alert-box.success
+        = flash[:success]
+
+.row
+  .small-2.columns
+    %ul.side-nav
+      %li
+        %a{ :href => "/admin/domains/#{@domain.fqdn}"} Overview
+      %li.active
+        %a{ :href => "/admin/domains/#{@domain.fqdn}/mailboxes"} Mailboxes
+      %li
+        %a{ :href => "/admin/domains/#{@domain.fqdn}/aliases"} Aliases
+  .small-8.small-centered.columns
+    %h2= "#{@mailbox.local_part}@#{@domain.fqdn}"
+    .row
+      .small-12.columns
+        %dl
+          %dt Status
+          %dd= @mailbox.active ? "Active" : "Inactive"
+          %dt Login status
+          %dd= @mailbox.auth_allowed ? "Allowed" : "Denied"
+          %dt Transport
+          %dd= @mailbox.transport.name
+          %dt Quota
+          %dd= (@mailbox.quota_limit_bytes > 0) ? "#{@quota} #{@quota_suffix}B" : "Unlimited"
+          - if @user.is_admin?
+            %dt Mailbox format
+            %dd= @mailbox.mailbox_format
+            %dt UID
+            %dd= @mailbox.uid
+    .row
+      .small-12.columns
+        %a.button{ :href => "#", :'data-reveal-id' => "edit-modal" }
+          Edit
+        .reveal-modal#edit-modal.small{ :'data-reveal' => true, :role => "dialog", :'aria-hidden' => "true" }
+          %h2 Edit alias #{@mailbox.local_part}@#{@domain.fqdn}
+          %form{ :method => "POST", :action => "/admin/domains/#{@domain.fqdn}/mailboxes/#{@mailbox.local_part}/edit" }
+            .row
+              .small-12.columns
+                %label
+                  Mailbox status
+                  %select{ :name => "mailbox_status" }
+                    %option{ :value => "active", :selected => @mailbox.active } Active
+                    %option{ :value => "inactive", :selected => !@mailbox.active } Inactive
+            .row
+              .small-12.columns
+                %label
+                  Transport
+                  %select{ :name => "transport" }
+                    - for transport in @transports
+                      %option{ :value => transport.id, :selected => (@mailbox.transport.id == transport.id) }= transport.name
+            .row
+              .small-12.columns
+                %label
+                  New password (leave empty to leave unchanged)
+                  %input{ :type => 'password', :placeholder => "Password", :name => "new_password" }
+            .row
+              .small-12.columns
+                %label
+                  Repeat new password
+                  %input{ :type => 'password', :placeholder => "Password", :name => "new_password_confirmation" }
+            .row
+              .small-12.columns
+                %label
+                  Login status
+                  %select{ :name => "login_status" }
+                    %option{ :value => "allowed", :selected => @mailbox.auth_allowed } Allowed
+                    %option{ :value => "denied", :selected => !@mailbox.auth_allowed } Denied
+            .row
+              .small-12.columns
+                %label
+                  Quota (0 for unlimited)
+                .row.collapse
+                  .small-8.columns
+                    %input{ :type => 'text', :name => "quota", :value => @quota }
+                  .small-4.columns
+                    %select.postfix{ :name => "quota_suffix" }
+                      %option{ :value => "k", :selected => (@quota_suffix == 'k') } kB
+                      %option{ :value => "M", :selected => (@quota_suffix == 'M') } MB
+                      %option{ :value => "G", :selected => (@quota_suffix == 'G') } GB
+            - if @user.is_admin?
+              .row
+                .small-12.columns
+                  %label
+                    UID
+                    %input{ :type => 'text', :name => "uid", :value => @mailbox.uid }
+            .row
+              .small-12.columns
+                %input.button{ :type => "submit", :value => "Save changes" }
+
+        %a.button.alert{ :href => "#", :'data-reveal-id' => "delete-modal" }
+          Delete
+        .reveal-modal#delete-modal.small{ :'data-reveal' => true, :role => "dialog", :'aria-hidden' => "true" }
+          %h2 Confirm deletion
+          %form{ :method => "POST", :action => "/admin/domains/#{@domain.fqdn}/mailboxes/#{@mailbox.local_part}/delete" }
+            .row
+              %p
+                Are you sure you want to delete the mailbox #{@mailbox.local_part}@#{@domain.fqdn}?
+            .row
+              .small-12.columns
+                %input.button.alert{ :type => "submit", :value => "Delete mailbox" }

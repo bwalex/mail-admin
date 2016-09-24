@@ -9,7 +9,7 @@ Bundler.require(:default, ENV['RACK_ENV'])
 
 begin
   require 'rubocop/rake_task'
-  Rubocop::RakeTask.new(:rubocop)
+  RuboCop::RakeTask.new(:rubocop)
 rescue LoadError
   puts "Could not load rubocop. Skipping."
 end

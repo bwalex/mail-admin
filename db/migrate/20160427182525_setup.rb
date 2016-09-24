@@ -1,11 +1,22 @@
 class Setup < ActiveRecord::Migration
   def self.up
+    create_table :users do |t|
+      t.string     :username
+      t.string     :password
+      t.string     :email
+      t.string     :salt
+      t.boolean    :admin
+      t.timestamps
+    end
+
+    add_index :users, :username, :unique => true
+    add_index :users, :email, :unique => true
+
+
     create_table :domains do |t|
       t.references :user
       t.string     :fqdn
       t.integer    :gid
-      # t.string     :maildir
-      t.string     :def_mailbox_format
       t.boolean    :active
 
       t.timestamps
@@ -13,6 +24,7 @@ class Setup < ActiveRecord::Migration
 
     add_index :domains, :fqdn, :unique => true
     add_index :domains, :gid, :unique => true
+    add_foreign_key :domains, :users
 
 
     create_table :transports do |t|
@@ -54,19 +66,6 @@ class Setup < ActiveRecord::Migration
 
     add_index :aliases, [:local_part, :domain_id], :unique => true
     add_foreign_key :aliases, :domains, on_delete: :cascade
-
-
-    create_table :users do |t|
-      t.string     :username
-      t.string     :password
-      t.string     :email
-      t.string     :salt
-      t.boolean    :admin
-      t.timestamps
-    end
-
-    add_index :users, :username, :unique => true
-    add_index :users, :email, :unique => true
   end
 
   def self.down

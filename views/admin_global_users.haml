@@ -1,0 +1,59 @@
+.row
+  .small-8.small-centered.columns
+    %nav.breadcrumbs
+      %a{ :href => "/admin/global" } Settings
+      %a.current{ :href => "/admin/global/users" } Users
+
+.row
+  .small-8.small-centered.columns
+    - if flash.has?(:error)
+      .alert-box.alert
+        = flash[:error]
+    - if flash.has?(:success)
+      .alert-box.success
+        = flash[:success]
+
+.row
+  .small-2.columns
+    %ul.side-nav
+      %li.active
+        %a{ :href => "/admin/global/users"} Users
+      %li
+        %a{ :href => "/admin/global/transports"} Transports
+      %li
+        %a{ :href => "/admin/global/params"} Params
+  .small-8.small-centered.columns
+    %h2 Users
+    %form{ :method => "POST", :action => "/admin/global/users/modify" }
+      %table#user-list
+        %thead
+          %tr
+            %th Remove
+            %th{ :width => "150" } Date added
+            %th Username
+            %th Email
+            %th Privileges
+        %tbody
+          -for user in @users
+            %tr
+              %td
+                %input{ :type => "checkbox", :name => "user_delete[]", :value => "#{user.id}" }
+              %td= user.created_at.strftime("%d/%m/%Y %H:%M")
+              %td= user.username
+              %td= user.email
+              %td
+                %select{ :name => "admin[#{user.id}]" }
+                  %option{ :value => "user", :selected => (not user.is_admin?) || nil } User
+                  %option{ :value => "admin", :selected => user.is_admin? || nil } Admin
+      %input.button.small{ :type => "submit", :value => "Save changes" }
+    %form{ :method => "POST", :action => "/admin/global/users/add" }
+      .row.collapse
+        .small-4.columns
+          %input{ :type => "text", :name => "username", :placeholder => "alice" }
+        .small-6.columns
+          %input{ :type => "text", :name => "email", :placeholder => "alice@example.com" }
+        .small-2.columns
+          %input.button.postfix{ :type => "submit", :value => "Add new user" }
+
+:javascript
+  $("#user-list").dataTable();

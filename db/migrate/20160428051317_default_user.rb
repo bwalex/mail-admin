@@ -3,7 +3,7 @@ require_relative '../../models/users'
 class DefaultUser < ActiveRecord::Migration
   def self.up
     User.create!(
-      :username => "root@example.com",
+      :username => "root",
       :email => "root@example.com",
       :new_password => "root",
       :new_password_confirmation => "root",

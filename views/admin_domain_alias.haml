@@ -3,6 +3,8 @@
     %nav.breadcrumbs
       %a{ :href => "/admin/domains" } Domains
       %a{ :href => "/admin/domains/#{@domain.fqdn}" }= @domain.fqdn
+      %a{ :href => "/admin/domains/#{@domain.fqdn}/aliases" } Aliases
+      %a{ :href => "/admin/domains/#{@domain.fqdn}/aliases/#{@alias.local_part}" }= @alias.local_part
 
 .row
   .small-8.small-centered.columns
@@ -16,42 +18,40 @@
 .row
   .small-2.columns
     %ul.side-nav
-      %li.active
+      %li
         %a{ :href => "/admin/domains/#{@domain.fqdn}"} Overview
       %li
         %a{ :href => "/admin/domains/#{@domain.fqdn}/mailboxes"} Mailboxes
-      %li
+      %li.active
         %a{ :href => "/admin/domains/#{@domain.fqdn}/aliases"} Aliases
   .small-8.small-centered.columns
-    %h2= @domain.fqdn
+    %h2= "#{@alias.local_part}@#{@domain.fqdn}"
     .row
       .small-12.columns
         %dl
           %dt Status
-          %dd= @domain.active ? "Active" : "Inactive"
-          - if @user.is_admin?
-            %dt GID
-            %dd= @domain.gid
+          %dd= @alias.active ? "Active" : "Inactive"
+          %dt Destination
+          %dd= @alias.destination
     .row
       .small-12.columns
         %a.button{ :href => "#", :'data-reveal-id' => "edit-modal" }
           Edit
         .reveal-modal#edit-modal.small{ :'data-reveal' => true, :role => "dialog", :'aria-hidden' => "true" }
-          %h2 Edit domain #{@domain.fqdn}
-          %form{ :method => "POST", :action => "/admin/domains/#{@domain.fqdn}/edit" }
+          %h2 Edit alias #{@alias.local_part}@#{@domain.fqdn}
+          %form{ :method => "POST", :action => "/admin/domains/#{@domain.fqdn}/aliases/#{@alias.local_part}/edit" }
             .row
               .small-12.columns
                 %label
                   Status
-                  %select{ :name => "domain_status" }
-                    %option{ :value => "active", :selected => @domain.active } Active
-                    %option{ :value => "inactive", :selected => !@domain.active } Inactive
-            - if @user.is_admin?
-              .row
-                .small-12.columns
-                  %label
-                    GID
-                    %input{ :type => 'text', :name => "gid", :value => @domain.gid }
+                  %select{ :name => "mailbox_status" }
+                    %option{ :value => "active", :selected => @alias.active } Active
+                    %option{ :value => "inactive", :selected => !@alias.active } Inactive
+            .row
+              .small-12.columns
+                %label
+                  Destination
+                  %input{ :type => 'text', :name => "destination", :value => @alias.destination }
             .row
               .small-12.columns
                 %input.button{ :type => "submit", :value => "Save changes" }
@@ -60,10 +60,10 @@
           Delete
         .reveal-modal#delete-modal.small{ :'data-reveal' => true, :role => "dialog", :'aria-hidden' => "true" }
           %h2 Confirm deletion
-          %form{ :method => "POST", :action => "/admin/domains/#{@domain.fqdn}/delete" }
+          %form{ :method => "POST", :action => "/admin/domains/#{@domain.fqdn}/aliases/#{@alias.local_part}/delete" }
             .row
               %p
-                Are you sure you want to delete domain #{@domain.fqdn} and all associated mailboxes and aliases?
+                Are you sure you want to delete the alias #{@alias.local_part}@#{@domain.fqdn}?
             .row
               .small-12.columns
-                %input.button.alert{ :type => "submit", :value => "Delete domain" }
+                %input.button.alert{ :type => "submit", :value => "Delete alias" }
