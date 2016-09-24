@@ -8,7 +8,6 @@ class Mailbox < ActiveRecord::Base
   belongs_to :transport
 
   before_save :hash_new_password, :if => :password_changed?
-  before_validation :populate_defaults, :on => [:create, :update]
 
   validates_confirmation_of :new_password, :if => :password_changed?
   validates :local_part, uniqueness: { scope: :domain, case_sensitive: false }
@@ -34,9 +33,4 @@ class Mailbox < ActiveRecord::Base
     salt = "$6$#{SecureRandom.base64(12).tr("+", ".")}$"
     self[:password] = @new_password.crypt(salt)
   end
-
-  def populate_defaults
-    self[:mailbox_format] = domain.def_mailbox_format if self[:mailbox_format].blank?
-  end
-
 end
