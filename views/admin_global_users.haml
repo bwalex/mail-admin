@@ -12,6 +12,9 @@
     - if flash.has?(:success)
       .alert-box.success
         = flash[:success]
+    - if flash.has?(:notice)
+      .alert-box.info
+        = flash[:notice]
 
 .row
   .small-2.columns

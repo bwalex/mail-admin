@@ -4,8 +4,9 @@ require_relative 'models/domains'
 require_relative 'models/aliases'
 require_relative 'models/mailboxes'
 require_relative 'models/transports'
-#require_relative 'workers/email_worker'
+require_relative 'workers/email_worker'
 require_relative 'helpers/account_creator'
+require 'securerandom'
 
 class Web < Sinatra::Base
   use Rack::Flash
@@ -159,13 +160,15 @@ class Web < Sinatra::Base
 
   post '/admin/global/users/add' do
     begin
-      _user = User.create!(:username => params[:username],
+      password = SecureRandom.base64(8)
+      user = User.create!(:username => params[:username],
                           :email => params[:email],
-                          :new_password => "r00t!",
+                          :new_password => password,
                           :admin => false)
 
-      # NewUserEmailJob.new.async.perform(user.id)
+      NewUserEmailJob.perform_async(user.id, password)
       flash[:success] = "New user added successfully"
+      flash[:notice] = "Temporary password for #{params[:username]}: #{password}"
     rescue ActiveRecord::RecordInvalid => invalid
       flash[:error] = "Error adding new user: #{invalid.message}"
     end
