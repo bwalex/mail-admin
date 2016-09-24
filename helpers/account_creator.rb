@@ -4,17 +4,23 @@ require 'json'
 class AccountCreator
   class Error < StandardError; end
 
+  def self.config=(config)
+    @@config = config
+  end
+
   def self.create_account!(uid, gid)
-    @@config ||= YAML::load(File.open('config/helper_config.yml'))
+    begin
+      uri = URI("#{@@config['url']}/create_account")
+      req = Net::HTTP::Post.new(uri, 'Content-Type' => 'application/json')
+      req.body = { uid: uid, gid: gid }.to_json
+      res = Net::HTTP.start(uri.hostname, uri.port) do |http|
+        http.request(req)
+      end
 
-    uri = URI("#{@@config['url']}/create_account")
-    req = Net::HTTP::Post.new(uri, 'Content-Type' => 'application/json')
-    req.body = { uid: uid, gid: gid }.to_json
-    res = Net::HTTP.start(uri.hostname, uri.port) do |http|
-      http.request(req)
+      fail Error.new("#{res.code} - #{res.body || "unknown"}") unless res.kind_of? Net::HTTPSuccess
+    rescue SystemCallError => e
+      fail Error.new(e.message)
     end
-
-    fail Error.new("#{res.code} - #{res.body || "unknown"}") unless res.kind_of? Net::HTTPSuccess
     true
   end
 end
