@@ -31,7 +31,7 @@ class Mailbox < ActiveRecord::Base
   private
 
   def hash_new_password
-    salt = "$5$rounds=100000$#{SecureRandom.base64(15).tr("+", ".")}"
+    salt = "$6$#{SecureRandom.base64(12).tr("+", ".")}$"
     self[:password] = @new_password.crypt(salt)
   end
 
