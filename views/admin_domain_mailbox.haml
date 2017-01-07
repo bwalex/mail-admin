@@ -47,7 +47,7 @@
         %a.button{ :href => "#", :'data-reveal-id' => "edit-modal" }
           Edit
         .reveal-modal#edit-modal.small{ :'data-reveal' => true, :role => "dialog", :'aria-hidden' => "true" }
-          %h2 Edit alias #{@mailbox.local_part}@#{@domain.fqdn}
+          %h2 Edit mailbox #{@mailbox.local_part}@#{@domain.fqdn}
           %form{ :method => "POST", :action => "/admin/domains/#{@domain.fqdn}/mailboxes/#{@mailbox.local_part}/edit" }
             .row
               .small-12.columns

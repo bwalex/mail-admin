@@ -377,7 +377,7 @@ class Web < Sinatra::Base
           flash[:error] = "Error creating mailbox: you are not authorized to change the UID"
           redirect "/admin/domains/#{params[:domain]}/mailboxes"
         end
-        uid = params[:uid]
+        uid = params[:uid].to_i
       end
       ActiveRecord::Base.transaction do
         uid = GlobalParam.next_uid! if uid.nil?
